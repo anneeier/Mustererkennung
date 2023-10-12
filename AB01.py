@@ -30,7 +30,7 @@ def vigniette(img):
     return 0
 
 
-imgSrc = cv.imread('Utils/Landschaft.jpg')
+imgSrc = cv.imread('Utils/SetGame.png')
 imgGray = cv.cvtColor(imgSrc, cv.COLOR_RGB2GRAY)
 imgSepia = sepia(imgSrc)
 imgSat = saturation(imgSepia)
@@ -42,10 +42,10 @@ cv.imshow("Sepia", imgSepia)
 cv.imshow("Saturation", imgSat)
 cv.waitKey(0)
 
-cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV1/Abgaben/AB01/imgSrc.png", imgSrc)
-cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV1/Abgaben/AB01/imgGray.png", imgGray)
-cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV1/Abgaben/AB01/imgSepia.png", imgSepia)
-cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV1/Abgaben/AB01/imgSat.png", imgSat)
+cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgSrc.png", imgSrc)
+cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgGray.png", imgGray)
+cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgSepia.png", imgSepia)
+cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgSat.png", imgSat)
 
 #C:\Users\annes\Documents\Studium\Aktuelle Module\BV1\Abgaben\AB01 - Bilder
 #Quellen:
