@@ -28,7 +28,7 @@ def saturation(imgSat):
 
 
 def vigniette(imgSrc, radius):    
-    width, height = imgSrc.shape
+    width, height, color = imgSrc.shape
     imgSrc = imgSrc/255
     result = imgSrc
     max_len = math.sqrt(width//2 * width//2 + height//2 * height//2)
@@ -43,14 +43,13 @@ def vigniette(imgSrc, radius):
     return result
 
 
-img_white = np.ones((500,500))
-
 imgSrc = cv.imread('Utils/LennaCol.png')
 
+#img_white = np.ones((500,500))
 imgGray = cv.cvtColor(imgSrc, cv.COLOR_RGB2GRAY)
 imgSepia = sepia(imgSrc)
 imgSat = saturation(imgSepia)
-imgVig = vigniette(imgGray, 150)
+imgVig = vigniette(imgSrc, 150)
 
 cv.imshow("imgSrc",imgSrc)
 cv.imshow("imgGray",imgGray)
