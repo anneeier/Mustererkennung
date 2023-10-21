@@ -49,20 +49,22 @@ imgSrc = cv.imread('Utils/LennaCol.png')
 imgGray = cv.cvtColor(imgSrc, cv.COLOR_RGB2GRAY)
 imgSepia = sepia(imgSrc)
 imgSat = saturation(imgSepia)
-imgVig = vigniette(imgSrc, 150)
+imgVig = vigniette(imgSat, 150)
 
-cv.imshow("imgSrc",imgSrc)
-cv.imshow("imgGray",imgGray)
+cv.imshow("Src",imgSrc)
+cv.imshow("Gray",imgGray)
 cv.imshow("Sepia", imgSepia)
 cv.imshow("Saturation", imgSat)
-cv.imshow('Vig', imgVig)
+cv.imshow('Vignette', imgVig)
 cv.waitKey(0)
 
 
-#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgSrc.png", imgSrc)
-#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgGray.png", imgGray)
-#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgSepia.png", imgSepia)
-#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Abgaben/AB01-Results/imgSat.png", imgSat)
+#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Mustererkennung/AB01-Results/imgSrc.png", imgSrc)
+#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Mustererkennung/AB01-Results/imgGray.png", imgGray)
+#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Mustererkennung/AB01-Results/imgSepia.png", imgSepia)
+#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Mustererkennung/AB01-Results/imgSat.png", imgSat)
+#cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Mustererkennung/AB01-Results/imgVig.png", imgVig)
+
 
 #C:\Users\annes\Documents\Studium\Aktuelle Module\BV1\Abgaben\AB01 - Bilder
 #Quellen:
