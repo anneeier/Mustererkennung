@@ -1,0 +1,87 @@
+import os
+import cv2 as cv2
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+directory = 'c:/data/AvB'
+
+included_extensions = ['jpg','jpeg','JPG']
+fileNames = [fn for fn in os.listdir(directory)
+              if any(fn.endswith(ext) for ext in included_extensions)]
+
+for imgFile in fileNames:
+    filePath = os.path.join(directory, imgFile)
+    print(f"processing {imgFile} ...")
+    imgCol = cv2.cvtColor(cv2.imread(filePath), cv2.COLOR_BGR2RGB)
+    
+    # Bild verkleinern
+    sy, sx = imgCol.shape[:2]
+    scaling_factor = 0.25
+    syNew = int(sy * scaling_factor)
+    sxNew = int(sx * scaling_factor)
+    imgCol = cv2.resize(imgCol, (sxNew, syNew))
+    
+    # in HSV umwandeln und auf Basis des Sättigung schwellwerten
+    imgHsv = cv2.cvtColor(imgCol, cv2.COLOR_RGB2HSV)
+    h, s, v = cv2.split(imgHsv)
+    _, imgBin = cv2.threshold(s, 80, 255, cv2.THRESH_BINARY)
+    
+    # Rauschen durch morphologische Operatoren reduzieren
+    kernel = np.ones((3, 3), np.uint8)
+    imgBin = cv2.erode(imgBin, kernel, iterations=1)
+    imgBin = cv2.erode(imgBin, kernel, iterations=1)
+    imgBin = cv2.dilate(imgBin, kernel, iterations=1)
+    imgBin = cv2.erode(imgBin, kernel, iterations=1)
+    imgBin = cv2.erode(imgBin, kernel, iterations=1)
+    imgBin = cv2.dilate(imgBin, kernel, iterations=1)
+    
+    #plt.imshow(imgBin, cmap="gray")
+    #plt.show()
+    
+    # Hier stellen wir sicher, dass es weniger Vordergrund- (weiße) als Hintergrund-Pixel (schwarze) gibt
+    cntForegroundPixel = cv2.countNonZero(imgBin)
+    cntBackgroundPixel = imgBin.size - cntForegroundPixel  
+    if cntBackgroundPixel < cntForegroundPixel:
+        imgBin = cv2.bitwise_not(imgBin)
+    
+    # Konturen berechnen...
+    contours, _ = cv2.findContours(imgBin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+    # ... und längste davon bestimmen
+    longestContour = None
+    longestContourPerimeter = -1
+    longestContourArea = -1
+    
+    for contour in contours:
+        perimeter = cv2.arcLength(contour, closed=True)
+
+        if perimeter > longestContourPerimeter:
+            longestContour = contour
+            longestContourPerimeter = perimeter
+            longestContourArea = cv2.contourArea(contour)
+
+    cv2.drawContours(imgCol, [longestContour], -1, (0,255,255), 4)
+    
+    #approxContour = cv2.approxPolyDP(longestContour, 0.005 * longestContourPerimeter, True)
+    #cv2.drawContours(imgCol, [approxContour], -1, (255,0,255), 4)
+    
+    plt.imshow(imgCol, cmap="gray")
+    plt.show()
+    
+    # Merkmal berechnen: Rundheit
+    pCorr = 0.95 * longestContourPerimeter
+    circularity = 4 * math.pi * longestContourArea / pCorr**2
+    
+    # Merkmal berechnen: Durchschnittlicher H-Wert
+    mask = np.zeros_like(h)
+    cv2.drawContours(mask, [longestContour], -1, 255, thickness=cv2.FILLED)
+    pixelsInside_h = h[mask == 255]
+    meanH = np.mean(pixelsInside_h)
+    
+    # Merkmal berechnen: Hu-Momente
+    huMoments = cv2.HuMoments(cv2.moments(longestContour))
+    for i in range(0,7):
+        huMoments[i] = -1* math.copysign(1.0, huMoments[i]) * math.log10(abs(huMoments[i]))
+    
+    print(f"{circularity}; {meanH}; {huMoments[0][0]}; {huMoments[1][0]}; {huMoments[2][0]}; {huMoments[3][0]}; {huMoments[4][0]}; {huMoments[5][0]}; {huMoments[6][0]}")
