@@ -42,21 +42,65 @@ def vigniette(imgSrc, radius):
                 result[x,y] = imgSrc[x,y] - max(0, reduceBrigt) 
     return result
 
+import cv2
+import numpy as np
 
-imgSrc = cv.imread('Utils/LennaCol.png')
+def create_vignette(image):
+    height, width = image.shape[:2]
+    
+    # Erzeuge eine Maske für die Vignette
+    mask = np.zeros((height, width), dtype=np.uint8)
+    cv.circle(mask, (width//2, height//2), min(width, height)//3, 255, -1)
+
+    cv2.imshow('Mask ohne Filter', mask)
+
+    
+    # Erzeuge einen radialen Weichzeichnungseffekt
+    blurred_mask = cv2.GaussianBlur(mask,(0,0),sigmaX=min(width, height)//7.5)
+
+    cv2.imshow('Mask mit Filter', blurred_mask)
+
+    # Teile das Bild in die Farbkanäle auf
+    b, g, r = cv.split(image)
+
+    # Wende die Vignette auf jeden Farbkanal an, indem du sie mit dem entsprechenden Farbkanal multiplizierst
+    b_vignette = cv.multiply(b.astype(float), blurred_mask.astype(float) / 255)
+    g_vignette = cv.multiply(g.astype(float), blurred_mask.astype(float) / 255)
+    r_vignette = cv.multiply(r.astype(float), blurred_mask.astype(float) / 255)
+
+    # Kombiniere die Farbkanäle zu einem Bild mit der Vignette
+    vignette_image = cv.merge((b_vignette.astype(np.uint8), g_vignette.astype(np.uint8), r_vignette.astype(np.uint8)))
+    return vignette_image
+
+# Lade das Bild
+image = cv2.imread('Utils/LennaCol.png')
+
+# Erzeuge die Vignette
+vignette_image = create_vignette(image)
+
+# Zeige das Ergebnis
+cv2.imshow('Originalbild', image)
+cv2.imshow('Vignettenbild', vignette_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+
+
+# imgSrc = cv.imread('Utils/LennaCol.png')
 
 #img_white = np.ones((500,500))
-imgGray = cv.cvtColor(imgSrc, cv.COLOR_RGB2GRAY)
-imgSepia = sepia(imgSrc)
-imgSat = saturation(imgSepia)
-imgVig = vigniette(imgSat, 150)
+# imgGray = cv.cvtColor(imgSrc, cv.COLOR_RGB2GRAY)
+# imgSepia = sepia(imgSrc)
+# imgSat = saturation(imgSepia)
+# imgVig = vigniette(imgSat, 150)
 
-cv.imshow("Src",imgSrc)
-cv.imshow("Gray",imgGray)
-cv.imshow("Sepia", imgSepia)
-cv.imshow("Saturation", imgSat)
-cv.imshow('Vignette', imgVig)
-cv.waitKey(0)
+# cv.imshow("Src",imgSrc)
+# cv.imshow("Gray",imgGray)
+# cv.imshow("Sepia", imgSepia)
+# cv.imshow("Saturation", imgSat)
+# cv.imshow('Vignette', imgVig)
+# cv.waitKey(0)
 
 
 #cv.imwrite("C:/Users/annes/Documents/Studium/Aktuelle Module/BV2/Mustererkennung/AB01-Results/imgSrc.png", imgSrc)
